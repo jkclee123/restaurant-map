@@ -79,46 +79,28 @@
 
         service.nearbySearch(request, function(results, status) {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
-            oriResultList = results
-
-            markers.forEach(function(marker) {
-              marker.setMap(null);
-            });
-            markers = [];
-
-            for (var i = 0; i < oriResultList.length; i++){
-              markers.push(new google.maps.Marker({
-                map: map,
-                title: oriResultList[i].name,
-                position: oriResultList[i].geometry.location
-              }));
-            }
-
+            oriResultList = results;
+            constructMarkers();
             reorderList()
+            contructListContent();
           }
         });
       }
 
-      function contructListContent(){
-        $("#list").empty()
-        var listContent = ""
-        listContent += "<ul>"
-        for (var i = 0; i < resultList.length; i++){
-          listContent += `<li class="resName">
-                            ${resultList[i].name}
-                            <span class="hoverTxt">
-                              address: ${resultList[i].vicinity}<br/>
-                              rating: ${resultList[i].rating}
-                            </span>
-                          </li>`
-        }
-        listContent += "</ul>"
-        listContent += btnRow();
-        $("#list").append(listContent)
-        $(`#orderSelect option[value=${orderBy}]`).attr('selected','selected');
-      }
+      function constructMarkers(){
+        markers.forEach(function(marker) {
+          marker.setMap(null);
+        });
+        markers = [];
 
-    
+        for (var i = 0; i < oriResultList.length; i++){
+          markers.push(new google.maps.Marker({
+            map: map,
+            title: oriResultList[i].name,
+            position: oriResultList[i].geometry.location
+          }));
+        }
+      }
 
       function reorderList(){
         resultList = oriResultList
@@ -127,7 +109,6 @@
         } else if (orderBy == "name"){
           resultList.sort( compareByName )
         }
-        contructListContent();
       }
 
       function compareByCost(obj1, obj2){
@@ -148,6 +129,25 @@
         } else{
           return 0;
         }
+      }
+
+      function contructListContent(){
+        $("#list").empty()
+        var listContent = ""
+        listContent += "<ul>"
+        for (var i = 0; i < resultList.length; i++){
+          listContent += `<li class="resName">
+                            ${resultList[i].name}
+                            <span class="hoverTxt">
+                              address: ${resultList[i].vicinity}<br/>
+                              rating: ${resultList[i].rating}
+                            </span>
+                          </li>`
+        }
+        listContent += "</ul>"
+        listContent += btnRow();
+        $("#list").append(listContent)
+        $(`#orderSelect option[value=${orderBy}]`).attr('selected','selected');
       }
 
       function btnRow(){
